@@ -896,7 +896,7 @@
     <section class="project-section-layout">
       <!-- Left: Raspberry Pi Single-Board Computer -->
       <div class="board-container">
-        <div class="board-card scrapbook-cutout" id="rpiBoardCard" title="Raspberry Pi SBC Targets — Click to inspect hardware specs">
+        <div class="board-card scrapbook-cutout" id="rpiBoardCard">
           <img src="images/pi_scrapbook.png" alt="Raspberry Pi Single-Board Computers" onerror="this.src='pi_scrapbook.png'">
         </div>
       </div>
@@ -1024,7 +1024,7 @@
         </a>
 
         <!-- Video Button -->
-        <button class="demo-btn" id="videoButton" title="Launch Demo Video Simulation">
+        <button class="demo-btn" id="videoButton" title="Video in progress">
           Video
         </button>
       </div>
@@ -1067,30 +1067,14 @@
   <div class="modal-backdrop" id="videoModalDialog">
     <div class="modal-card">
       <div class="modal-header-bar">
-        <h3>ZoomBuddi Live Demo — Jetson Nano 2GB ARM64</h3>
+        <h3>ZoomBuddi Demo Video</h3>
         <button class="modal-close-icon" id="closeVideoBtn">&times;</button>
       </div>
-      <div class="modal-content-area">
-        <div class="demo-video-display">
-          <div class="demo-terminal-feed" id="terminalFeed">
-            [  0.000000] Linux version 5.10.104-tegra (arm64-v8a)<br>
-            [  0.842109] Tegra210: 4x Cortex-A57 @ 1.43GHz, 128 Maxwell CUDA Cores<br>
-            [  1.204910] Initializing V4L2 USB Video Capture (/dev/video0: 1080p60 YUYV)...<br>
-            [  1.458922] Initializing ALSA PCM PulseAudio Subsystem... OK<br>
-            [  1.890124] Loading Zoom Client SDK libmeetingsdk.so (ARM64 native build)...<br>
-            [  2.310488] Connecting to Zoom Cloud Meeting #849 201 4920...<br>
-            [  2.840192] Hardware H.264 NVDEC engine initialized.<br>
-            [  3.120044] <span style="color:#10b981;">✔ Room connected! Latency: 16.4ms | FPS: 60 | CPU load: 14%</span><br>
-            <span class="blinking-cursor"></span>
-          </div>
-          <div class="player-controls-bottom">
-            <button class="player-toggle-btn" id="playerToggleBtn">▶</button>
-            <div class="player-scrubber">
-              <div class="player-scrubber-fill"></div>
-            </div>
-            <span style="font-size: 11px; font-family: 'Helvetica', 'Helvetica Neue', Arial, sans-serif;">01:14 / 03:30</span>
-          </div>
-        </div>
+      <div class="modal-content-area" style="text-align: center; padding: 48px 24px;">
+        <h4 style="font-size: 24px; font-weight: 700; margin-bottom: 12px; color: #000000; font-family: var(--font-helvetica);">Video in progress</h4>
+        <p style="color: #666666; font-size: 16px; max-width: 420px; margin: 0 auto; line-height: 1.5; font-family: var(--font-helvetica);">
+          A demonstration video of ZoomBuddi running on ARM SBC hardware is currently in progress and will be available soon.
+        </p>
       </div>
     </div>
   </div>
@@ -1206,7 +1190,7 @@
              <li><strong>Platform:</strong> Native ARM Linux (Kernel 5.10+ / Ubuntu JetPack / Raspberry Pi OS)</li>
              <li><strong>Architecture:</strong> AArch64 / ARMv8 64-bit on SBC hardware (Jetson Nano, Raspberry Pi)</li>
              <li><strong>Zoom Engine:</strong> Zoom Meeting SDK for Linux with V4L2 zero-copy hardware acceleration</li>
-             <li><strong>Interactive Theme:</strong> Live falling snow physics! ❄️🐧</li>
+             <li><strong>Interactive Theme:</strong> Live falling snow physics</li>
            </ul>`
         );
       });
@@ -1274,28 +1258,10 @@
       }
     });
 
-    // Inspect Raspberry Pi Board Targets
-    const rpiBoardCard = document.getElementById('rpiBoardCard');
-    if (rpiBoardCard) {
-      rpiBoardCard.addEventListener('click', () => {
-        showSpecsModal(
-          "Raspberry Pi — Hardware Specifications",
-          `<p style="margin-bottom: 12px;"><strong>Hardware Target Architectures:</strong></p>
-           <ul style="padding-left: 20px; margin-bottom: 16px;">
-             <li><strong>Raspberry Pi Model B:</strong> Classic Broadcom BCM2835 ARM processor, VideoCore IV 3D GPU, HDMI & RCA composite output, 512MB RAM, dual USB 2.0 ports.</li>
-             <li><strong>Raspberry Pi Zero:</strong> Ultra-miniaturized 65mm × 30mm form factor, 1GHz ARM single-core CPU, 512MB LPDDR2, mini-HDMI.</li>
-             <li><strong>Raspberry Pi 4 & 5 Series:</strong> High-performance 64-bit quad-core ARM Cortex-A72/A76, up to 8GB RAM, dual 4K display output with hardware H.264/H.265 acceleration.</li>
-           </ul>
-           <p style="color: #666;">ZoomBuddi is engineered for cross-compilation and lightweight native execution across the entire spectrum of ARM Linux single-board computers.</p>`
-        );
-      });
-    }
-
     // Video Demo Modal
     const videoButton = document.getElementById('videoButton');
     const videoModalDialog = document.getElementById('videoModalDialog');
     const closeVideoBtn = document.getElementById('closeVideoBtn');
-    const playerToggleBtn = document.getElementById('playerToggleBtn');
 
     if (videoButton) {
       videoButton.addEventListener('click', () => {
@@ -1308,40 +1274,6 @@
         videoModalDialog.classList.remove('open');
       });
     }
-
-    let videoPlaying = true;
-    if (playerToggleBtn) {
-      playerToggleBtn.addEventListener('click', () => {
-        videoPlaying = !videoPlaying;
-        playerToggleBtn.textContent = videoPlaying ? "⏸" : "▶";
-      });
-    }
-
-    // Live terminal log simulator inside video modal
-    const streamLogs = [
-      "[  3.401820] V4L2: Frame 120 received (1920x1080 @ 60.0 fps, delay 14ms)",
-      "[  3.901240] Audio: Opus codec 48kHz stereo stream synchronized",
-      "[  4.402100] Jetson NVDEC: H.264 stream decode bit-rate: 2.4 Mbps",
-      "[  4.901110] ZoomRoomService: Meeting health index 100/100 (Optimal)",
-      "[  5.402010] OpenZoom Client: Keep-alive ping acknowledged (RTT 16.2ms)"
-    ];
-    let streamIdx = 0;
-    setInterval(() => {
-      if (videoModalDialog.classList.contains('open') && videoPlaying) {
-        const line = streamLogs[streamIdx % streamLogs.length];
-        const term = document.getElementById('terminalFeed');
-        if (term) {
-          const div = document.createElement('div');
-          div.style.color = "#34d399";
-          div.textContent = line;
-          term.insertBefore(div, term.lastElementChild);
-          if (term.children.length > 12) {
-            term.removeChild(term.firstElementChild);
-          }
-        }
-        streamIdx++;
-      }
-    }, 2100);
 
     // Dismiss modals when clicking backdrop
     window.addEventListener('click', (e) => {
