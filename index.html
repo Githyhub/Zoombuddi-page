@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZoomBuddi — Linux compatible zoom room client</title>
+  <style>
+    /* Helvetica typography standard across entire site */
+    :root {
+      --font-helvetica: "Helvetica", "Helvetica Neue", Arial, sans-serif;
+      --bg-white: #ffffff;
+      --text-black: #000000;
+      --text-gray: #666666;
+      --btn-gray: #cecece;
+      --btn-gray-hover: #bcbcbc;
+      --red-arrow: #ea3838;
+      --zoom-blue: #0e71eb;
+      --green-speaking: #10b981;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Helvetica", "Helvetica Neue", Arial, sans-serif !important;
+    }
+
+    html, body {
+      font-family: "Helvetica", "Helvetica Neue", Arial, sans-serif !important;
+      background-color: var(--bg-white);
+      color: var(--text-black);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.4;
+      overflow-x: hidden;
+    }
+
+    button, input, select, textarea, a, p, span, h1, h2, h3, h4, h5, h6, div, li, ul, code, pre {
+      font-family: "Helvetica", "Helvetica Neue", Arial, sans-serif !important;
+    }
+
+    .page-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 32px 64px 32px;
+      position: relative;
+    }
+
+    /* ================= 1. HEADER & HERO SECTION ================= */
+    .hero-layout {
+      display: grid;
+      grid-template-columns: 46% 54%;
+      min-height: 400px;
+      margin-bottom: 70px;
+    }
+
+    .hero-left-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding-top: 10px;
+      padding-right: 30px;
+    }
+
+    .brand-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #000000;
+      letter-spacing: -0.015em;
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 55px;
+      transition: color 0.15s ease;
+    }
+
+    .brand-title:hover {
+      color: var(--zoom-blue);
+    }
+
+    .footer-contact-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-gray);
+    }
+
+    .email-link {
+      color: #555555;
+      text-decoration: none;
+      font-weight: 400;
+      transition: color 0.15s ease;
+    }
+
+    .email-link:hover {
+      color: var(--zoom-blue);
+      text-decoration: underline;
+    }
+
+    .email-sep {
+      color: #9ca3af;
+      font-size: 10px;
+    }
+
+    .hero-heading {
+      font-size: 72px;
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
+      color: #000000;
+      margin-bottom: 14px;
+    }
+
+    .hero-heading .highlight-zoom {
+      background-color: var(--zoom-blue);
+      color: #ffffff !important;
+      padding: 2px 14px 4px 14px;
+      border-radius: 0;
+      display: inline-block;
+      line-height: 1.05;
+      margin-right: 6px;
+      vertical-align: 2px;
+      box-shadow: 0 4px 14px rgba(14, 113, 235, 0.25);
+    }
+
+    .hero-description {
+      font-size: 19px;
+      font-weight: 400;
+      color: #444444;
+      letter-spacing: -0.015em;
+      line-height: 1.4;
+    }
+
+    /* ================= LINUX TUX PENGUIN HERO SHOWCASE ================= */
+    .hero-right-col {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .penguin-hero-container {
+      width: 100%;
+      position: relative;
+    }
+
+    /* Zoom Meeting Video Tile (with active speaker green outline & lower-left name) */
+    .zoom-video-tile, .penguin-hero-card {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      min-height: 290px;
+      background: #111827;
+      border: 3.5px solid #10b981;
+      border-radius: 0;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.25), 0 0 22px rgba(16, 185, 129, 0.26), 0 14px 34px rgba(0, 0, 0, 0.22);
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .zoom-video-tile:hover, .penguin-hero-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.35), 0 0 32px rgba(16, 185, 129, 0.42), 0 20px 44px rgba(0, 0, 0, 0.28);
+    }
+
+    .zoom-video-content {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .zoom-penguin-avatar {
+      max-width: 84%;
+      max-height: 84%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 4px 18px rgba(16, 185, 129, 0.25));
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .zoom-video-tile:hover .zoom-penguin-avatar {
+      transform: scale(1.05);
+    }
+
+    /* Lower Left Corner Name Tag — exactly like Zoom meeting video */
+    .zoom-lower-name-tag {
+      position: absolute;
+      bottom: 12px;
+      left: 14px;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 4px 10px 4px 8px;
+      border-radius: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .zoom-mic-icon {
+      flex-shrink: 0;
+      animation: micAudioPulse 1.8s infinite ease-in-out;
+    }
+
+    @keyframes micAudioPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.12); }
+    }
+
+    .zoom-name-text {
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      line-height: 1;
+      font-family: "Helvetica", "Helvetica Neue", Arial, sans-serif !important;
+    }
+
+
+
+    .penguin-tag-right {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 600;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    /* ================= FALLING SNOW EFFECT CANVAS (ONLY AT THE TOP) ================= */
+    #snowCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 480px;
+      pointer-events: none;
+      z-index: 10;
+      overflow: hidden;
+    }
+
+    /* ================= 2. WHAT IS THIS PROJECT SECTION ================= */
+    .project-section-layout {
+      display: grid;
+      grid-template-columns: 46% 54%;
+      align-items: center;
+      margin-bottom: 95px;
+      position: relative;
+    }
+
+    .board-container {
+      position: relative;
+      display: flex;
+      justify-content: flex-start;
+      cursor: pointer;
+    }
+
+    .board-card {
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+
+    .board-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .board-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .board-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(4px);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #1f2937;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 5;
+    }
+
+    .board-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+
+    .project-info-col {
+      padding-left: 20px;
+      max-width: 540px;
+    }
+
+    .project-title {
+      font-size: 38px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: #000000;
+      margin-bottom: 26px;
+      line-height: 1.15;
+    }
+
+    .project-block {
+      margin-bottom: 24px;
+    }
+
+    .project-block-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: #000000;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .project-block-text {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-gray);
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+    }
+
+    /* ================= 3. DEMO SET UP! SECTION (WITH PROVIDED REAL IMAGES & RED ARROWS ON TOP) ================= */
+    .demo-section {
+      text-align: center;
+      margin-bottom: 90px;
+      position: relative;
+    }
+
+    .demo-title {
+      font-size: 38px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: #000000;
+      margin-bottom: 45px;
+    }
+
+    .demo-setup-stage {
+      position: relative;
+      max-width: 980px;
+      margin: 0 auto 30px auto;
+      min-height: 520px;
+    }
+
+    /* Stage Layout Grid */
+    .demo-hardware-grid {
+      display: grid;
+      grid-template-columns: 38% 62%;
+      align-items: start;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Left Hardware Column: Labels & Jetson */
+    .hardware-left-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      padding-top: 15px;
+    }
+
+    .annotation-block-camera {
+      margin-bottom: 50px;
+      cursor: pointer;
+    }
+
+    .annotation-block-computer {
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
+    .hardware-label-text {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: #000000;
+      line-height: 1.15;
+      transition: color 0.15s ease;
+    }
+
+    .hardware-label-text:hover {
+      color: var(--zoom-blue);
+    }
+
+    .hardware-subhint {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #4b5563;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 3px 8px;
+      border-radius: 0;
+      margin-top: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .annotation-block-camera:hover .hardware-subhint,
+    .annotation-block-computer:hover .hardware-subhint {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    /* ================= SCRAPBOOK CONTOUR-FOLLOWING ROUGH WHITE PAPER BORDER ================= */
+    .scrapbook-cutout {
+      position: relative;
+      display: inline-block;
+      z-index: 2;
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), filter 0.22s ease;
+      /* Authentic paper shadow following the exact contour/silhouette of the cut object */
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.12)) drop-shadow(0 12px 24px rgba(0, 0, 0, 0.14));
+    }
+
+    .scrapbook-cutout:hover {
+      transform: translateY(-5px) scale(1.018);
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.16)) drop-shadow(0 20px 36px rgba(0, 0, 0, 0.20));
+    }
+
+    /* Jetson Image Container */
+    .jetson-image-wrap {
+      width: 250px;
+      margin-left: 55px;
+      margin-top: 10px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .jetson-image-wrap img {
+      width: 100%;
+      height: auto;
+      display: block;
+      pointer-events: auto;
+    }
+
+    /* Right Hardware Column: Camera atop TV Monitor */
+    .hardware-right-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      padding-top: 0;
+    }
+
+    /* Camera Image atop the TV */
+    .camera-image-wrap {
+      width: 175px;
+      margin-bottom: -15px;
+      z-index: 4;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .camera-image-wrap img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* TV / Monitor Image */
+    .tv-image-wrap {
+      width: 100%;
+      max-width: 530px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .tv-image-wrap img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ================= RED ARROWS OVERLAY (ALWAYS ON TOP!) ================= */
+    .red-arrows-top-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 20; /* STRICTLY ON TOP OF IMAGES */
+      overflow: visible;
+    }
+
+    .red-doodle-path {
+      fill: none;
+      stroke: var(--red-arrow);
+      stroke-width: 2.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 1px 2px rgba(234, 56, 56, 0.3));
+      transition: stroke-width 0.2s ease;
+    }
+
+    /* Action Buttons Row */
+    .demo-buttons-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 90px;
+      margin-top: 35px;
+      position: relative;
+      z-index: 5;
+    }
+
+    .demo-btn {
+      width: 180px;
+      height: 58px;
+      background-color: var(--btn-gray);
+      color: #000000;
+      border: none;
+      border-radius: 0;
+      font-family: var(--font-helvetica);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: all 0.18s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .demo-btn:hover {
+      background-color: var(--btn-gray-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .demo-btn:active {
+      transform: translateY(0);
+    }
+
+    /* ================= 4. FOOTER ================= */
+    .page-footer {
+      border-top: 1px solid #000000;
+      padding-top: 50px;
+      margin-top: 90px;
+    }
+
+    .footer-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .footer-left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 45px;
+    }
+
+    .footer-site-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #000000;
+      letter-spacing: -0.01em;
+    }
+
+    .footer-socials {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .social-link {
+      color: #000000;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease, color 0.15s ease;
+      text-decoration: none;
+    }
+
+    .social-link:hover {
+      color: var(--zoom-blue);
+      transform: translateY(-2px);
+    }
+
+    .social-link svg {
+      width: 17px;
+      height: 17px;
+      fill: currentColor;
+    }
+
+    .footer-right-col {
+      display: flex;
+      align-items: center;
+    }
+
+    .footer-fellows-link {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      color: #000000;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: #fafafa;
+      transition: all 0.18s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .footer-fellows-link:hover {
+      background: #ffffff;
+      border-color: var(--zoom-blue);
+      color: var(--zoom-blue);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(14, 113, 235, 0.12);
+    }
+
+    /* ================= MODAL & INTERACTIVE CONTROLS ================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 0;
+      max-width: 680px;
+      width: 100%;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+      transform: scale(0.96);
+      transition: transform 0.25s ease;
+      border: 1px solid #d1d5db;
+    }
+
+    .modal-backdrop.open .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-header-bar {
+      padding: 18px 24px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header-bar h3 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .modal-close-icon {
+      background: none;
+      border: none;
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .modal-close-icon:hover {
+      color: #000;
+    }
+
+    .modal-content-area {
+      padding: 24px;
+    }
+
+    .demo-video-display {
+      background: #090a0f;
+      border-radius: 0;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .demo-terminal-feed {
+      padding: 18px;
+      font-family: "Helvetica", "Helvetica Neue", Arial, sans-serif;
+      font-size: 12.5px;
+      color: #38bdf8;
+      line-height: 1.6;
+      background: rgba(15, 23, 42, 0.95);
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .blinking-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 14px;
+      background: #38bdf8;
+      vertical-align: middle;
+      animation: blinkCursor 1s infinite;
+    }
+
+    @keyframes blinkCursor {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    .player-controls-bottom {
+      background: rgba(24, 24, 27, 0.92);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #fff;
+    }
+
+    .player-toggle-btn {
+      background: var(--zoom-blue);
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .player-scrubber {
+      flex: 1;
+      height: 4px;
+      background: #3f3f46;
+      border-radius: 2px;
+      position: relative;
+    }
+
+    .player-scrubber-fill {
+      width: 52%;
+      height: 100%;
+      background: var(--zoom-blue);
+      border-radius: 2px;
+    }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+      .hero-layout,
+      .project-section-layout {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+      .demo-hardware-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .hardware-left-col {
+        align-items: center;
+        text-align: center;
+      }
+      .jetson-image-wrap {
+        margin-left: 0;
+      }
+      .hero-heading {
+        font-size: 44px;
+      }
+      .hero-left-col {
+        padding-right: 0;
+      }
+      .brand-title {
+        margin-bottom: 30px;
+      }
+      .zoom-gallery-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .footer-grid {
+        flex-direction: column;
+        gap: 40px;
+      }
+      .footer-right-col {
+        gap: 40px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .page-container {
+        padding: 16px 16px 48px 16px;
+      }
+      .hero-heading {
+        font-size: 38px;
+      }
+      .hero-heading .highlight-zoom {
+        padding: 2px 10px 4px 10px;
+        border-radius: 0;
+      }
+      .zoom-gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .demo-buttons-row {
+        gap: 20px;
+      }
+      .demo-btn {
+        width: 140px;
+        font-size: 20px;
+        height: 50px;
+      }
+      .footer-right-col {
+        flex-wrap: wrap;
+        gap: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Realistic Interactive Falling Snow Effect Canvas -->
+  <canvas id="snowCanvas"></canvas>
+
+  <div class="page-container">
+
+    <!-- ================= 1. HEADER & HERO SECTION ================= -->
+    <header class="hero-layout">
+      <!-- Left Hero Text -->
+      <div class="hero-left-col">
+        <a href="https://nextlab-zoom-fellows.vercel.app/#gallery" target="_blank" rel="noopener noreferrer" class="brand-title">next lab — Alexander S. Kim</a>
+        
+        <h1 class="hero-heading"><span class="highlight-zoom">Zoom</span> Buddi</h1>
+        <p class="hero-description">Linux compatible zoom room client</p>
+      </div>
+
+      <!-- Right: Zoom Meeting Video Tile (with green outline & lower-left name 'buddi') -->
+      <div class="hero-right-col">
+        <div class="penguin-hero-container">
+          <div class="zoom-video-tile" id="penguinHeroCard" title="buddi in Zoom Meeting — Click for specs">
+            <!-- Centered Penguin Logo with White Outline -->
+            <div class="zoom-video-content">
+              <img src="images/zoombuddi_penguin_white.png" alt="buddi in Zoom meeting" class="zoom-penguin-avatar" onerror="this.src='zoombuddi_penguin_white.png'">
+            </div>
+
+            <!-- Lower Left Corner: Name tag 'buddi' like a Zoom meeting video -->
+            <div class="zoom-lower-name-tag">
+              <svg class="zoom-mic-icon" viewBox="0 0 16 16" width="13" height="13" fill="#10b981">
+                <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"/>
+                <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V14h2a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1h2v-1.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/>
+              </svg>
+              <span class="zoom-name-text">buddi</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ================= 2. WHAT IS THIS PROJECT SECTION ================= -->
+    <section class="project-section-layout">
+      <!-- Left: Raspberry Pi Single-Board Computer -->
+      <div class="board-container">
+        <div class="board-card scrapbook-cutout" id="rpiBoardCard" title="Raspberry Pi SBC Targets — Click to inspect hardware specs">
+          <img src="images/pi_scrapbook.png" alt="Raspberry Pi Single-Board Computers" onerror="this.src='pi_scrapbook.png'">
+        </div>
+      </div>
+
+      <!-- Right: Text column faithfully matching the mockup -->
+      <div class="project-info-col">
+        <h2 class="project-title">What is this project</h2>
+
+        <div class="project-block">
+          <h3 class="project-block-label">Software</h3>
+          <p class="project-block-text">
+            Building an linux application for SCB Arm computers to run zoom meetings through zoom's SDKs.
+          </p>
+        </div>
+
+        <div class="project-block">
+          <h3 class="project-block-label">Hardware</h3>
+          <p class="project-block-text">
+            A demo on the Jetson Nano 2gb will be done but the end goal will be compatability with any arm linux computer.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 3. DEMO SET UP! SECTION ================= -->
+    <section class="demo-section">
+      <h2 class="demo-title">Demo set up!</h2>
+
+      <div class="demo-setup-stage">
+
+        <!-- HARDWARE COMPONENTS (REPLACED WITH THE THREE INCLUDED IMAGES) -->
+        <div class="demo-hardware-grid">
+          
+          <!-- LEFT: "Camera and screen", "Computer", and Jetson Nano image -->
+          <div class="hardware-left-col">
+            <!-- Label 1: Camera and screen -->
+            <div class="annotation-block-camera" id="labelCameraScreen">
+              <h3 class="hardware-label-text">Camera and<br>screen</h3>
+              <div class="hardware-subhint">▶ Click to inspect A/V setup</div>
+            </div>
+
+            <!-- Label 2: Computer -->
+            <div class="annotation-block-computer" id="labelComputer">
+              <h3 class="hardware-label-text">Computer</h3>
+              <div class="hardware-subhint">▶ Jetson Nano 2GB ARM</div>
+            </div>
+
+            <!-- JETSON IMAGE (WITH CONTOUR-FOLLOWING ROUGH WHITE PAPER SCRAPBOOK BORDER) -->
+            <div class="jetson-image-wrap scrapbook-cutout" id="jetsonCard" title="NVIDIA Jetson Nano 2GB SBC — Click for specs">
+              <img src="images/jetson_scrapbook.png" alt="NVIDIA Jetson Nano 2GB SBC" onerror="this.src='jetson_scrapbook.png'">
+            </div>
+          </div>
+
+          <!-- RIGHT: Camera atop TV Monitor -->
+          <div class="hardware-right-col">
+            <!-- CAMERA IMAGE (WITH CONTOUR-FOLLOWING ROUGH WHITE PAPER SCRAPBOOK BORDER) -->
+            <div class="camera-image-wrap scrapbook-cutout" id="cameraCard" title="HD 1080p Conference Camera — Click for specs">
+              <img src="images/camera_scrapbook.png" alt="HD 1080p Webcam" onerror="this.src='camera_scrapbook.png'">
+            </div>
+
+            <!-- TV / MONITOR IMAGE (REPLACED WITH DOCUMENT.JPG WITH CONTOUR-FOLLOWING SCRAPBOOK BORDER) -->
+            <div class="tv-image-wrap scrapbook-cutout" id="tvCard" title="Demo Display Screen — Click for specs">
+              <img src="images/document_scrapbook.png" alt="Demo Display Screen" onerror="this.src='document_scrapbook.png'">
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RED ARROWS OVERLAY (ALWAYS DRAWN ON TOP OF IMAGES!) -->
+        <svg class="red-arrows-top-overlay" viewBox="0 0 980 540" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <!-- Hand-drawn filled red marker arrowhead -->
+            <marker id="redDoodleArrowHead" markerWidth="20" markerHeight="20" refX="14" refY="10" orient="auto">
+              <path d="M 2 4.5 L 16 10 L 2 15.5 Q 6.5 10 2 4.5 Z" fill="#ea3838" stroke="#ea3838" stroke-width="1.2" stroke-linejoin="round"/>
+            </marker>
+
+            <!-- Organic rough torn paper deckled edge filter -->
+            <filter id="scrapbookTornPaper" x="-10%" y="-10%" width="120%" height="120%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" result="noise" seed="4" />
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" result="tornEdge" />
+            </filter>
+
+            <!-- Contour-following sticker outline filter -->
+            <filter id="scrapbookContourFilter" x="-20%" y="-20%" width="140%" height="140%">
+              <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="7" />
+              <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="roughNoise" />
+              <feDisplacementMap in="dilated" in2="roughNoise" scale="5" xChannelSelector="R" yChannelSelector="G" result="displacedOutline" />
+              <feColorMatrix in="displacedOutline" type="matrix"
+                             values="0 0 0 0 0.98  0 0 0 0 0.97  0 0 0 0 0.95  0 0 0 1 0" result="paperWhite" />
+              <feDropShadow in="paperWhite" dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.18" result="paperShadow" />
+              <feMerge>
+                <feMergeNode in="paperShadow" />
+                <feMergeNode in="paperWhite" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          <!-- 1. Top Arrow: From "Camera and screen", loops in loop-de-loop and points ON TOP of Camera & TV -->
+          <path id="topRedArrow"
+                class="red-doodle-path"
+                d="M 235 65
+                   C 310 40, 375 10, 440 25
+                   C 480 35, 490 70, 450 85
+                   C 410 100, 385 75, 415 45
+                   C 455 10, 520 20, 580 55"
+                marker-end="url(#redDoodleArrowHead)" />
+
+          <!-- 2. Bottom Arrow: From "Computer", curves down and points ON TOP of Jetson Nano board -->
+          <path id="bottomRedArrow"
+                class="red-doodle-path"
+                d="M 195 210
+                   C 240 205, 275 220, 290 250
+                   C 300 275, 295 305, 270 335"
+                marker-end="url(#redDoodleArrowHead)" />
+        </svg>
+
+      </div>
+
+      <!-- BOTTOM ACTION BUTTONS: "Github" & "Video" -->
+      <div class="demo-buttons-row">
+        <!-- Github Button -->
+        <a href="https://github.com/Githyhub/ZoomBuddi" target="_blank" class="demo-btn" id="githubButton" title="Open GitHub Repository">
+          Github
+        </a>
+
+        <!-- Video Button -->
+        <button class="demo-btn" id="videoButton" title="Launch Demo Video Simulation">
+          Video
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= 4. FOOTER ================= -->
+    <footer class="page-footer">
+      <div class="footer-grid">
+        <!-- Left: Site Name & Social Media Links -->
+        <div class="footer-left-col">
+          <div class="footer-site-name">ZoomBuddi</div>
+          <div class="footer-contact-row">
+            <a href="mailto:askim12@asu.edu" class="email-link">askim12@asu.edu</a>
+            <span class="email-sep">•</span>
+            <a href="mailto:alexskim365@gmail.com" class="email-link">alexskim365@gmail.com</a>
+            <span class="email-sep">•</span>
+            <a href="https://www.linkedin.com/in/alexkim365" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn" title="LinkedIn Profile">
+              <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Link to Zoom Fellows at ASU -->
+        <div class="footer-right-col">
+          <a href="https://nextlab-zoom-fellows.vercel.app/#gallery" target="_blank" rel="noopener noreferrer" class="footer-fellows-link" title="Visit Zoom Fellows at ASU">
+            <span>Zoom Fellows at ASU</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- INTERACTIVE MODAL: VIDEO DEMO -->
+  <div class="modal-backdrop" id="videoModalDialog">
+    <div class="modal-card">
+      <div class="modal-header-bar">
+        <h3>ZoomBuddi Live Demo — Jetson Nano 2GB ARM64</h3>
+        <button class="modal-close-icon" id="closeVideoBtn">&times;</button>
+      </div>
+      <div class="modal-content-area">
+        <div class="demo-video-display">
+          <div class="demo-terminal-feed" id="terminalFeed">
+            [  0.000000] Linux version 5.10.104-tegra (arm64-v8a)<br>
+            [  0.842109] Tegra210: 4x Cortex-A57 @ 1.43GHz, 128 Maxwell CUDA Cores<br>
+            [  1.204910] Initializing V4L2 USB Video Capture (/dev/video0: 1080p60 YUYV)...<br>
+            [  1.458922] Initializing ALSA PCM PulseAudio Subsystem... OK<br>
+            [  1.890124] Loading Zoom Client SDK libmeetingsdk.so (ARM64 native build)...<br>
+            [  2.310488] Connecting to Zoom Cloud Meeting #849 201 4920...<br>
+            [  2.840192] Hardware H.264 NVDEC engine initialized.<br>
+            [  3.120044] <span style="color:#10b981;">✔ Room connected! Latency: 16.4ms | FPS: 60 | CPU load: 14%</span><br>
+            <span class="blinking-cursor"></span>
+          </div>
+          <div class="player-controls-bottom">
+            <button class="player-toggle-btn" id="playerToggleBtn">▶</button>
+            <div class="player-scrubber">
+              <div class="player-scrubber-fill"></div>
+            </div>
+            <span style="font-size: 11px; font-family: 'Helvetica', 'Helvetica Neue', Arial, sans-serif;">01:14 / 03:30</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE MODAL: SPECS & HARDWARE DETAILS -->
+  <div class="modal-backdrop" id="specsModalDialog">
+    <div class="modal-card">
+      <div class="modal-header-bar">
+        <h3 id="modalHeadingTitle">Hardware &amp; Architecture Details</h3>
+        <button class="modal-close-icon" id="closeSpecsBtn">&times;</button>
+      </div>
+      <div class="modal-content-area" id="modalDynamicBody" style="font-size: 14px; line-height: 1.6; color: #444;"></div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT: INTERACTION & LOGIC -->
+  <script>
+    // ================= REALISTIC FALLING SNOW EFFECT =================
+    function initSnowEffect() {
+      const canvas = document.getElementById('snowCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      
+      let width, height;
+      function updateSize() {
+        width = canvas.width = window.innerWidth;
+        const heroSection = document.querySelector('.hero-layout');
+        const heroBottom = heroSection ? (heroSection.offsetTop + heroSection.offsetHeight + 40) : 480;
+        height = canvas.height = heroBottom;
+        canvas.style.height = heroBottom + 'px';
+      }
+      updateSize();
+      
+      window.addEventListener('resize', updateSize);
+      
+      const numFlakes = 65;
+      const flakes = [];
+      let mouseX = width / 2;
+      let wind = 0;
+      
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        const targetWind = ((mouseX - width / 2) / (width / 2)) * 0.9;
+        wind += (targetWind - wind) * 0.05;
+      });
+      
+      for (let i = 0; i < numFlakes; i++) {
+        flakes.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          radius: Math.random() * 2.8 + 1.2,
+          speedY: Math.random() * 1.5 + 0.6,
+          speedX: Math.random() * 0.4 - 0.2,
+          opacity: Math.random() * 0.55 + 0.35,
+          angle: Math.random() * Math.PI * 2,
+          angularSpeed: Math.random() * 0.02 + 0.01,
+          wobbleDist: Math.random() * 1.6 + 0.6
+        });
+      }
+      
+      function renderSnow() {
+        ctx.clearRect(0, 0, width, height);
+        
+        for (let i = 0; i < flakes.length; i++) {
+          const f = flakes[i];
+          
+          f.angle += f.angularSpeed;
+          f.y += f.speedY;
+          f.x += Math.sin(f.angle) * f.wobbleDist + f.speedX + wind;
+          
+          if (f.y > height + 5) {
+            f.y = -10;
+            f.x = Math.random() * width;
+          }
+          if (f.x > width + 10) {
+            f.x = -10;
+          } else if (f.x < -10) {
+            f.x = width + 10;
+          }
+          
+          // Smooth fade-out towards the bottom of the top section
+          let alpha = f.opacity;
+          if (f.y > height - 70) {
+            alpha = f.opacity * Math.max(0, (height - f.y) / 70);
+          }
+          
+          ctx.beginPath();
+          ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+          ctx.shadowColor = 'rgba(255, 255, 255, 0.4)';
+          ctx.shadowBlur = f.radius > 2.4 ? 4 : 0;
+          ctx.fill();
+        }
+        
+        requestAnimationFrame(renderSnow);
+      }
+      
+      requestAnimationFrame(renderSnow);
+    }
+    
+    initSnowEffect();
+
+    // Zoom Meeting Video Tile (buddi) Interaction
+    const penguinHeroCard = document.getElementById('penguinHeroCard');
+    if (penguinHeroCard) {
+      penguinHeroCard.addEventListener('click', () => {
+        showSpecsModal(
+          "buddi — Live Zoom Meeting Video",
+          `<p style="margin-bottom: 12px;"><strong>Live Zoom Meeting Participant:</strong></p>
+           <ul style="padding-left: 20px; margin-bottom: 16px;">
+             <li><strong>Participant Name:</strong> buddi</li>
+             <li><strong>Video Status:</strong> Active Speaker (Green highlight border)</li>
+             <li><strong>Platform:</strong> Native ARM Linux (Kernel 5.10+ / Ubuntu JetPack / Raspberry Pi OS)</li>
+             <li><strong>Architecture:</strong> AArch64 / ARMv8 64-bit on SBC hardware (Jetson Nano, Raspberry Pi)</li>
+             <li><strong>Zoom Engine:</strong> Zoom Meeting SDK for Linux with V4L2 zero-copy hardware acceleration</li>
+             <li><strong>Interactive Theme:</strong> Live falling snow physics! ❄️🐧</li>
+           </ul>`
+        );
+      });
+    }
+
+    // Modal Manager
+    const specsModalDialog = document.getElementById('specsModalDialog');
+    const modalHeadingTitle = document.getElementById('modalHeadingTitle');
+    const modalDynamicBody = document.getElementById('modalDynamicBody');
+    const closeSpecsBtn = document.getElementById('closeSpecsBtn');
+
+    function showSpecsModal(title, html) {
+      modalHeadingTitle.textContent = title;
+      modalDynamicBody.innerHTML = html;
+      specsModalDialog.classList.add('open');
+    }
+
+    closeSpecsBtn.addEventListener('click', () => {
+      specsModalDialog.classList.remove('open');
+    });
+
+    // Inspect Camera and Screen setup
+    const labelCameraScreen = document.getElementById('labelCameraScreen');
+    const cameraCard = document.getElementById('cameraCard');
+    const tvCard = document.getElementById('tvCard');
+
+    [labelCameraScreen, cameraCard, tvCard].forEach(el => {
+      if (el) {
+        el.addEventListener('click', () => {
+          showSpecsModal(
+            "Camera & Display Pipeline",
+            `<p style="margin-bottom: 12px;"><strong>Video &amp; Audio Input/Output Architecture:</strong></p>
+             <ul style="padding-left: 20px; margin-bottom: 16px;">
+               <li><strong>Camera:</strong> HD 1080p Conference Camera streaming uncompressed YUYV video via Linux V4L2.</li>
+               <li><strong>Display:</strong> High-definition TV / Monitor connected via HDMI 2.0 with hardware acceleration.</li>
+               <li><strong>Driver:</strong> Linux Video4Linux2 (V4L2) kernel module with zero-copy DMA buffers.</li>
+               <li><strong>Audio:</strong> Dual integrated stereo microphones with acoustic echo cancellation (AEC).</li>
+             </ul>
+             <p style="color: #666;">Optimized for reliable continuous room operation on embedded ARM boards.</p>`
+          );
+        });
+      }
+    });
+
+    // Inspect Computer (Jetson Nano)
+    const labelComputer = document.getElementById('labelComputer');
+    const jetsonCard = document.getElementById('jetsonCard');
+
+    [labelComputer, jetsonCard].forEach(el => {
+      if (el) {
+        el.addEventListener('click', () => {
+          showSpecsModal(
+            "Computer: NVIDIA Jetson Nano 2GB",
+            `<p style="margin-bottom: 12px;"><strong>Embedded Linux System Architecture:</strong></p>
+             <ul style="padding-left: 20px; margin-bottom: 16px;">
+               <li><strong>SoC:</strong> NVIDIA Tegra X1 (Quad-core ARM Cortex-A57 @ 1.43 GHz)</li>
+               <li><strong>GPU:</strong> 128-core NVIDIA Maxwell GPU with CUDA acceleration</li>
+               <li><strong>RAM:</strong> 2GB 64-bit LPDDR4 @ 25.6 GB/s</li>
+               <li><strong>Hardware Video Decoding:</strong> H.264 / H.265 NVDEC hardware decoder for 60fps video with under 15% CPU load.</li>
+               <li><strong>Operating System:</strong> Ubuntu LTS (JetPack SDK)</li>
+             </ul>
+             <p style="color: #666;">Runs Zoom Client SDK natively on low-power ARM architecture.</p>`
+          );
+        });
+      }
+    });
+
+    // Inspect Raspberry Pi Board Targets
+    const rpiBoardCard = document.getElementById('rpiBoardCard');
+    if (rpiBoardCard) {
+      rpiBoardCard.addEventListener('click', () => {
+        showSpecsModal(
+          "Raspberry Pi — Hardware Specifications",
+          `<p style="margin-bottom: 12px;"><strong>Hardware Target Architectures:</strong></p>
+           <ul style="padding-left: 20px; margin-bottom: 16px;">
+             <li><strong>Raspberry Pi Model B:</strong> Classic Broadcom BCM2835 ARM processor, VideoCore IV 3D GPU, HDMI & RCA composite output, 512MB RAM, dual USB 2.0 ports.</li>
+             <li><strong>Raspberry Pi Zero:</strong> Ultra-miniaturized 65mm × 30mm form factor, 1GHz ARM single-core CPU, 512MB LPDDR2, mini-HDMI.</li>
+             <li><strong>Raspberry Pi 4 & 5 Series:</strong> High-performance 64-bit quad-core ARM Cortex-A72/A76, up to 8GB RAM, dual 4K display output with hardware H.264/H.265 acceleration.</li>
+           </ul>
+           <p style="color: #666;">ZoomBuddi is engineered for cross-compilation and lightweight native execution across the entire spectrum of ARM Linux single-board computers.</p>`
+        );
+      });
+    }
+
+    // Video Demo Modal
+    const videoButton = document.getElementById('videoButton');
+    const videoModalDialog = document.getElementById('videoModalDialog');
+    const closeVideoBtn = document.getElementById('closeVideoBtn');
+    const playerToggleBtn = document.getElementById('playerToggleBtn');
+
+    if (videoButton) {
+      videoButton.addEventListener('click', () => {
+        videoModalDialog.classList.add('open');
+      });
+    }
+
+    if (closeVideoBtn) {
+      closeVideoBtn.addEventListener('click', () => {
+        videoModalDialog.classList.remove('open');
+      });
+    }
+
+    let videoPlaying = true;
+    if (playerToggleBtn) {
+      playerToggleBtn.addEventListener('click', () => {
+        videoPlaying = !videoPlaying;
+        playerToggleBtn.textContent = videoPlaying ? "⏸" : "▶";
+      });
+    }
+
+    // Live terminal log simulator inside video modal
+    const streamLogs = [
+      "[  3.401820] V4L2: Frame 120 received (1920x1080 @ 60.0 fps, delay 14ms)",
+      "[  3.901240] Audio: Opus codec 48kHz stereo stream synchronized",
+      "[  4.402100] Jetson NVDEC: H.264 stream decode bit-rate: 2.4 Mbps",
+      "[  4.901110] ZoomRoomService: Meeting health index 100/100 (Optimal)",
+      "[  5.402010] OpenZoom Client: Keep-alive ping acknowledged (RTT 16.2ms)"
+    ];
+    let streamIdx = 0;
+    setInterval(() => {
+      if (videoModalDialog.classList.contains('open') && videoPlaying) {
+        const line = streamLogs[streamIdx % streamLogs.length];
+        const term = document.getElementById('terminalFeed');
+        if (term) {
+          const div = document.createElement('div');
+          div.style.color = "#34d399";
+          div.textContent = line;
+          term.insertBefore(div, term.lastElementChild);
+          if (term.children.length > 12) {
+            term.removeChild(term.firstElementChild);
+          }
+        }
+        streamIdx++;
+      }
+    }, 2100);
+
+    // Dismiss modals when clicking backdrop
+    window.addEventListener('click', (e) => {
+      if (e.target === videoModalDialog) videoModalDialog.classList.remove('open');
+      if (e.target === specsModalDialog) specsModalDialog.classList.remove('open');
+    });
+  </script>
+</body>
+</html>
