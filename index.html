@@ -873,7 +873,7 @@
       <!-- Right: Zoom Meeting Video Tile (with green outline & lower-left name 'buddi') -->
       <div class="hero-right-col">
         <div class="penguin-hero-container">
-          <div class="zoom-video-tile" id="penguinHeroCard" title="buddi in Zoom Meeting — Click for specs">
+          <div class="zoom-video-tile" id="penguinHeroCard" title="buddi">
             <!-- Centered Penguin Logo with White Outline -->
             <div class="zoom-video-content">
               <img src="images/zoombuddi_penguin_white.png" alt="buddi in Zoom meeting" class="zoom-penguin-avatar" onerror="this.src='zoombuddi_penguin_white.png'">
@@ -1182,16 +1182,8 @@
     if (penguinHeroCard) {
       penguinHeroCard.addEventListener('click', () => {
         showSpecsModal(
-          "buddi — Live Zoom Meeting Video",
-          `<p style="margin-bottom: 12px;"><strong>Live Zoom Meeting Participant:</strong></p>
-           <ul style="padding-left: 20px; margin-bottom: 16px;">
-             <li><strong>Participant Name:</strong> buddi</li>
-             <li><strong>Video Status:</strong> Active Speaker (Green highlight border)</li>
-             <li><strong>Platform:</strong> Native ARM Linux (Kernel 5.10+ / Ubuntu JetPack / Raspberry Pi OS)</li>
-             <li><strong>Architecture:</strong> AArch64 / ARMv8 64-bit on SBC hardware (Jetson Nano, Raspberry Pi)</li>
-             <li><strong>Zoom Engine:</strong> Zoom Meeting SDK for Linux with V4L2 zero-copy hardware acceleration</li>
-             <li><strong>Interactive Theme:</strong> Live falling snow physics</li>
-           </ul>`
+          "buddi",
+          `<p style="font-size: 20px; font-weight: 600; text-align: center; margin: 24px 0; color: #000000; font-family: var(--font-helvetica);">this penguin's name is buddi !</p>`
         );
       });
     }
